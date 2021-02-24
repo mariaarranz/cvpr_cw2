@@ -46,3 +46,7 @@ from in B.2.b
       - Would you say it is possible to distinguish the objects only using touch?
       - If you wanted to repeat the experiment with a cheaper tactile sensor, what object properties do you think would be most important for it to measure? Justify your answer based on your findings.
       - Our analysis is based on a single time step access all the available data sensor data. Discuss an alternative method we could use to prepare the data for pattern recognition. What are the pros and cons of this other approach?
+
+# Authors:
+- Maria Arranz Fombellida, ma8816, CID: 01250685
+- Patrick McCarthy, pm4617, CID:01353165

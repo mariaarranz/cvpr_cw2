@@ -2,7 +2,7 @@
 %  Patrick McCarthy, pm4617, CID:01353165 & Maria Arranz, ma8816, CID:01250685
 
 %% Section A - Data Preparation
-
+clc
 % 1 - Plot time series data
 
 % load data
@@ -11,7 +11,7 @@ file_name = 'car_sponge_101_08_HOLD'; % file name - change this to load differen
 load(strcat(dir_name,'/',file_name,'.mat')) 
 
 % plot pressure
-figure
+figure(1)
 hold on
 plot(F0pdc)
 plot(F1pdc)
@@ -20,9 +20,10 @@ grid on
 xlabel('sample')
 ylabel('pressure')
 title(['Low Frequency Fluid Pressure for ',file_name],'Interpreter', 'none')
+saveas(figure(1),[pwd '\results\Section_A\pressure.jpg']);
 
 % plot vibration
-figure
+figure(2)
 hold on
 plot(F0pac(2,:))
 plot(F1pac(2,:))
@@ -31,9 +32,10 @@ grid on
 xlabel('sample')
 ylabel('vibration')
 title(['High Frequency Fluid Vibrations for ',file_name],'Interpreter', 'none')
+saveas(figure(2),[pwd '\results\Section_A\vibration.jpg']);
 
 % plot temperature 
-figure
+figure(3)
 hold on
 plot(F0tdc)
 plot(F1tdc)
@@ -42,9 +44,10 @@ grid on
 xlabel('sample')
 ylabel('temperature')
 title(['Core Temperature for ',file_name],'Interpreter', 'none')
+saveas(figure(3),[pwd '\results\Section_A\temperature.jpg']);
 
 % plot impedance 
-figure
+figure(4)
 hold on
 for row=[1:19]
     h1 = plot(F0Electrodes(row,:), 'LineStyle','-');
@@ -55,9 +58,9 @@ legend([h1 h2],'F0','F1')
 xlabel('sample')
 ylabel('impedance')
 title(['Electrode Impedance for ',file_name],'Interpreter', 'none')
+saveas(figure(4),[pwd '\results\Section_A\impedance.jpg']);
 
 % 2 - Sample data for one finger
-
 timestep = 500;                                 % sample to use for comparison
 PVT = struct;                                  %  struct for data for all materials at chosen timestep
 Electrodes = struct;
@@ -93,23 +96,27 @@ for i = 1:60
 end
 
 % scatter plot
-figure
+figure(5)
 colours = linspace(1,10,length(pressure));
 scatter3(pressure,vibration,temperature,10,colours,'filled')
 xlabel('pressure')
 ylabel('vibration')
 zlabel('temperature')
 title('Scatter Plot for PVT at timestep 500')
+saveas(figure(5),[pwd '\results\Section_A\raw_scatter_plot_PVT.jpg']);
 
 %% Section B.1 - Principal Component Analysis - PVT
 clc
 % get the covariance matrix
 A = [pressure;vibration;temperature];
 C = cov(A);                 % C = covaiance matrix
+writematrix(C,[pwd '\results\Section_B\covariancematrix_PVT.csv']) 
 
 % finding Eigenvectors
 [V,D] = eig(C);         % V = the corresponding eigenvectors 
 D=diag(D);              % these are the corresponding eigenvalues
+writematrix(V,[pwd '\results\Section_B\eigenvectors_PVT.csv'])
+writematrix(D,[pwd '\results\Section_B\eigenvalues_PVT.csv'])
 
 % returns the eigenvector for the maximum eigenvalue
 maxeigval= V(:,find(D==max(D))); 
@@ -128,7 +135,7 @@ coeff = coeff*-1;   % compared to SV and SD the eigenvector were multiplied by -
 coeff(:,end) = coeff(:,end)*-1; % the last eigenvector was as supposed to be so returning it to original
 
 % Re-plot scatter plot for standardized data
-figure
+figure(6)
 colours = linspace(1,10,length(pressure));
 scatter3(A(:,1),A(:,2),A(:,3),10,colours,'filled')
 hold on
@@ -139,6 +146,7 @@ ylabel('Vibration')
 zlabel('Temperature')
 title('Standarized Scatter Plot for F0 PVT Data at timestep 500')
 hold off
+saveas(figure(6),[pwd '\results\Section_B\standardized_PCA_plot_PVT.jpg']);
 
 PC3_coeff = coeff(:,end); %Get last column as PC3
 PC2_coeff = coeff(:,2);   %Get SECOND column as PC2
@@ -153,7 +161,7 @@ coeff(:,end) = []; % Delete last column to get feature vector for 2D data
 P = A*coeff;    % Get 2D projected data
 
 % Re-plot scatter plot for standardized data
-figure
+figure(7)
 colours = linspace(1,10,length(pressure));
 scatter(P(:,1),P(:,2),10,colours,'filled')
 %hold on
@@ -163,9 +171,10 @@ scatter(P(:,1),P(:,2),10,colours,'filled')
 xlabel('PC1')
 ylabel('PC2')
 title('Proejected onto Principle Components for F0 PVT Data')
+saveas(figure(7),[pwd '\results\Section_B\projected_PCA_scatter_PVT.jpg']);
 
 % Create projected matrix onto the Principle Components
-figure
+figure(8)
 hAxes = axes('NextPlot','add',...             % Add subsequent plots to the axes
              'DataAspectRatio',[1 1 1],...    % match the scaling of each axis
              'YLim',[0.5 3.5],...             % set the y axis limit to show all PC
@@ -177,6 +186,7 @@ grid on
 yticks([1, 2, 3]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 PVT Data')
+saveas(figure(8),[pwd '\results\Section_B\1D_plot_PCA_PVT.jpg']);
 
 %% Section B.2 - Principal Component Analysis - Electrodes
 clc
@@ -196,23 +206,24 @@ maxeigvalE= SVE(:,find(SDE==max(SDE))); % Get first PC eigenvector
 [Ecoeff Escore eigenvalues] = pca(E); % Check that vatiables match with eigenvectors and eigenvalues found
 
 % Make scree plot of PC 
-figure
+figure(9)
 plot(eigenvalues, 'b*-', 'MarkerSize',10); % Plot Eigenvalues per Component Number
 xlabel('Component Number') 
 ylabel('Eigenvalue')
 set(gca,'YTick',0:1:12) % Set more ticks in y-axis
 title('Variance PCA Scree Plot for F0 Electrode Data')
+saveas(figure(9),[pwd '\results\Section_B\scree_plot_electrodes.jpg']);
 
 % Visualise data with first 3 PC
-PC3_Ecoeff = Ecoeff(:,3) % Get THIRD column as PC3
-PC2_Ecoeff = Ecoeff(:,2) % Get SECOND column as PC2
-PC1_Ecoeff = Ecoeff(:,1) % Get FIRST column as PC1
+PC3_Ecoeff = Ecoeff(:,3); % Get THIRD column as PC3
+PC2_Ecoeff = Ecoeff(:,2); % Get SECOND column as PC2
+PC1_Ecoeff = Ecoeff(:,1); % Get FIRST column as PC1
 EPC1 = E*PC1_Ecoeff;     % Project data onto PC1 as 1D
 EPC2 = E*PC2_Ecoeff;     % Project data onto PC2 as 1D
 EPC3 = E*PC3_Ecoeff;     % Project data onto PC3 as 1D
 
-% Create projected matrix onto the Principle Components
-figure
+% Create projected matrix onto the Principle Components 1D
+figure(10)
 hAxes = axes('NextPlot','add',...           % Add subsequent plots to the axes,
              'DataAspectRatio',[1 1 1],...  % match the scaling of each axis,
              'YLim',[0 20],...              % set the y axis limit,
@@ -224,17 +235,20 @@ grid on
 yticks([5, 10, 15]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 Electrodes')
+saveas(figure(10),[pwd '\results\Section_B\1D_plot_PCA_Electrodes.jpg']);
 
 J = [EPC1 EPC2 EPC3]; % Combine projected data onto PC vectors into one data matrix
-J_coeff = [PC1_Ecoeff PC2_Ecoeff PC3_Ecoeff] % Combine PC vectors into one data matrix
+J_coeff = [PC1_Ecoeff PC2_Ecoeff PC3_Ecoeff]; % Combine PC vectors into one data matrix
 
-figure
+% Plot the 3D projected Data onto top 3 variance PC
+figure(11)
 colours = linspace(1,10,length(EPC1));
 scatter3(J(:,1),J(:,2),J(:,3),10,colours,'filled') % Plot the projected data onto first 3 PC
 xlabel('PC1')
 ylabel('PC2')
 zlabel('PC3')
 title('Projection for first 3 PC of Electrode Data')
+saveas(figure(11),[pwd '\results\Section_B\projected_PCA_Scatter_3D_Electrodes.jpg']);
 
 %% Section C - Linear Discriminant Analysis
 

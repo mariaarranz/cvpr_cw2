@@ -116,18 +116,16 @@ maxeigval= V(:,find(D==max(D)));
 
 % standarize the data
 A = bsxfun(@minus,A',mean(A'))./ std(A');
+
 % Do the PCA
 [coeff,score,latent] = pca(A); % coeff = feature vector for eigenvectors
+
 % Calculate eigenvalues and eigenvectors of the covariance matrix
 SC = cov(A);
 [SV,SD] = eig(SC);
 SD=diag(SD);
-coeff = coeff*-1;
-coeff(:,end) = coeff(:,end)*-1;
-
-vector_1 = [coeff(1,1), coeff(2,1), coeff(3,1)];
-vector_2 = [coeff(1,2), coeff(2,2), coeff(3,2)];
-vector_3 = [coeff(1,3), coeff(2,3), coeff(3,3)];
+coeff = coeff*-1;   % compared to SV and SD the eigenvector were multiplied by -1 except the last column (unknown why)
+coeff(:,end) = coeff(:,end)*-1; % the last eigenvector was as supposed to be so returning it to original
 
 % Re-plot scatter plot for standardized data
 figure
@@ -135,8 +133,7 @@ colours = linspace(1,10,length(pressure));
 scatter3(A(:,1),A(:,2),A(:,3),10,colours,'filled')
 hold on
 vbls = {'PC1','PC2','PC3'}; % Labels for the variables
-biplot(coeff(:,1:3),'VarLabels',vbls);
-%plot3([0 0 0; vector_1(:,1), vector_2(:,1), vector_3(:,1)], [0 0 0; vector_1(:,2), vector_2(:,2), vector_3(:,2)], [0 0 0; vector_1(:,3), vector_2(:,3), vector_3(:,3)])
+biplot(coeff(:,1:3),'VarLabels',vbls); % plot the PC in the scatter plot
 xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
@@ -144,15 +141,16 @@ title('Standarized Scatter Plot for F0 PVT Data at timestep 500')
 hold off
 
 PC3_coeff = coeff(:,end); %Get last column as PC3
-PC2_coeff = coeff(:,2);
-PC1_coeff = coeff(:,1);
-PC1 = A*PC1_coeff;
-PC2 = A*PC2_coeff;
-PC3 = A*PC3_coeff;
+PC2_coeff = coeff(:,2);   %Get SECOND column as PC2
+PC1_coeff = coeff(:,1);   %Get FIRST column as PC1
+
+PC1 = A*PC1_coeff;  % Project onto PC1 to get 1D Data
+PC2 = A*PC2_coeff;  % Project onto PC2 to get 1D Data
+PC3 = A*PC3_coeff;  % Project onto PC3 to get 1D Data
 
 % Create projected matrix onto the Principle Components
-coeff(:,end) = []; %Delete last column
-P = A*coeff;
+coeff(:,end) = []; % Delete last column to get feature vector for 2D data
+P = A*coeff;    % Get 2D projected data
 
 % Re-plot scatter plot for standardized data
 figure
@@ -168,21 +166,21 @@ title('Proejected onto Principle Components for F0 PVT Data')
 
 % Create projected matrix onto the Principle Components
 figure
-hAxes = axes('NextPlot','add',...           %# Add subsequent plots to the axes,
-             'DataAspectRatio',[1 1 1],...  %#   match the scaling of each axis,
-             'YLim',[0.5 3.5],...             %#   set the y axis limit,
-             'Color','white');               %#   and don't use a background color
-plot(PC1,1,'k.','MarkerSize',10);  %# Plot data set 1
-plot(PC2,2,'m.','MarkerSize',10);  %# Plot data set 2
-plot(PC3,3,'b.','MarkerSize',10);  %# Plot data set 2
+hAxes = axes('NextPlot','add',...             % Add subsequent plots to the axes
+             'DataAspectRatio',[1 1 1],...    % match the scaling of each axis
+             'YLim',[0.5 3.5],...             % set the y axis limit to show all PC
+             'Color','white');                % set background color to white
+plot(PC1,1,'k.','MarkerSize',10);  %# Plot data set 1 (show at y = 1)
+plot(PC2,2,'m.','MarkerSize',10);  %# Plot data set 2 (show at y = 2)
+plot(PC3,3,'b.','MarkerSize',10);  %# Plot data set 3 (show at y = 3)
 grid on
-yticks([1, 2, 3])
-yticklabels({'PC1', 'PC2', 'PC3'})
+yticks([1, 2, 3]) % Show only ticks for the 3 PC
+yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 PVT Data')
 
 %% Section B.2 - Principal Component Analysis - Electrodes
 clc
-% Get electrodes data for one finger (F0)
+% Get electrodes data for one finger (F0) - same as for PVT
 E = F0Electrodes;
 
 % standarize the data
@@ -199,45 +197,44 @@ maxeigvalE= SVE(:,find(SDE==max(SDE))); % Get first PC eigenvector
 
 % Make scree plot of PC 
 figure
-plot(eigenvalues, 'b*-', 'MarkerSize',10);
-xlabel('Component Number')
+plot(eigenvalues, 'b*-', 'MarkerSize',10); % Plot Eigenvalues per Component Number
+xlabel('Component Number') 
 ylabel('Eigenvalue')
-set(gca,'YTick',0:1:12)
+set(gca,'YTick',0:1:12) % Set more ticks in y-axis
 title('Variance PCA Scree Plot for F0 Electrode Data')
 
 % Visualise data with first 3 PC
 PC3_Ecoeff = Ecoeff(:,3) % Get THIRD column as PC3
 PC2_Ecoeff = Ecoeff(:,2) % Get SECOND column as PC2
 PC1_Ecoeff = Ecoeff(:,1) % Get FIRST column as PC1
-EPC1 = E*PC1_Ecoeff;
-EPC2 = E*PC2_Ecoeff;
-EPC3 = E*PC3_Ecoeff;
+EPC1 = E*PC1_Ecoeff;     % Project data onto PC1 as 1D
+EPC2 = E*PC2_Ecoeff;     % Project data onto PC2 as 1D
+EPC3 = E*PC3_Ecoeff;     % Project data onto PC3 as 1D
 
 % Create projected matrix onto the Principle Components
 figure
-hAxes = axes('NextPlot','add',...           %# Add subsequent plots to the axes,
-             'DataAspectRatio',[1 1 1],...  %#   match the scaling of each axis,
-             'YLim',[0 20],...             %#   set the y axis limit,
-             'Color','white');               %#   and don't use a background color
-plot(EPC1,5,'k.','MarkerSize',10);  %# Plot data set 1
-plot(EPC2,10,'m.','MarkerSize',10);  %# Plot data set 2
-plot(EPC3,15,'b.','MarkerSize',10);  %# Plot data set 2
+hAxes = axes('NextPlot','add',...           % Add subsequent plots to the axes,
+             'DataAspectRatio',[1 1 1],...  % match the scaling of each axis,
+             'YLim',[0 20],...              % set the y axis limit,
+             'Color','white');              % set background color as white
+plot(EPC1,5,'k.','MarkerSize',10);   % Plot data set 1 (at y = 5)
+plot(EPC2,10,'m.','MarkerSize',10);  % Plot data set 2 (at y = 10)
+plot(EPC3,15,'b.','MarkerSize',10);  % Plot data set 3 (at y = 15)
 grid on
-yticks([5, 10, 15])
-yticklabels({'PC1', 'PC2', 'PC3'})
+yticks([5, 10, 15]) % Show only ticks for the 3 PC
+yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 Electrodes')
 
-J = [EPC1 EPC2 EPC3];
-J_coeff = [PC1_Ecoeff PC2_Ecoeff PC3_Ecoeff]
+J = [EPC1 EPC2 EPC3]; % Combine projected data onto PC vectors into one data matrix
+J_coeff = [PC1_Ecoeff PC2_Ecoeff PC3_Ecoeff] % Combine PC vectors into one data matrix
 
 figure
 colours = linspace(1,10,length(EPC1));
-scatter3(J(:,1),J(:,2),J(:,3),10,colours,'filled')
+scatter3(J(:,1),J(:,2),J(:,3),10,colours,'filled') % Plot the projected data onto first 3 PC
 xlabel('PC1')
 ylabel('PC2')
 zlabel('PC3')
 title('Projection for first 3 PC of Electrode Data')
-
 
 %% Section C - Linear Discriminant Analysis
 

@@ -140,7 +140,7 @@ biplot(coeff(:,1:3),'VarLabels',vbls);
 xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
-title('Standarized Scatter Plot for F0 PVT Data at timestep 500')
+title('Standarized Scatter Plot for PVT at timestep 500')
 hold off
 
 PC3_coeff = coeff(:,end); %Get last column as PC3
@@ -164,7 +164,7 @@ scatter(P(:,1),P(:,2),10,colours,'filled')
 %plot([0 0; vector_1(:,1), vector_2(:,1)], [0 0; vector_1(:,2), vector_2(:,2)])
 xlabel('PC1')
 ylabel('PC2')
-title('Proejected onto Principle Components for F0 PVT Data')
+title('Proejected onto Principle Components')
 
 % Create projected matrix onto the Principle Components
 figure
@@ -178,7 +178,7 @@ plot(PC3,3,'b.','MarkerSize',10);  %# Plot data set 2
 grid on
 yticks([1, 2, 3])
 yticklabels({'PC1', 'PC2', 'PC3'})
-title('1D PCA Plots for F0 PVT Data')
+title('1D PCA Plots')
 
 %% Section B.2 - Principal Component Analysis - Electrodes
 clc
@@ -196,7 +196,7 @@ maxeigvalE= SVE(:,find(SDE==max(SDE))); % Get first PC eigenvector
 
 % Get variance of each component by finding corresponding eigenvalues
 [Ecoeff Escore eigenvalues] = pca(E); % Check that vatiables match with eigenvectors and eigenvalues found
-
+Ecoeff
 % Make scree plot of PC 
 figure
 plot(eigenvalues, 'b*-', 'MarkerSize',10);

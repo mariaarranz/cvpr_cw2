@@ -7,7 +7,7 @@ clc
 
 % load data
 dir_name = 'PR_CW_DATA_2021';
-file_name = 'kitchen_sponge_114_02_HOLD'; % file name - change this to load different files
+file_name = 'car_sponge_101_08_HOLD'; % file name - change this to load different files
 load(strcat(dir_name,'/',file_name,'.mat')) 
 
 % plot pressure
@@ -61,12 +61,11 @@ title(['Electrode Impedance for ',file_name],'Interpreter', 'none')
 saveas(figure(4),[pwd '\results\Section_A\impedance.jpg']);
 
 % 2 - Sample data for one finger
-
 timestep = 500;                                 % sample to use for comparison
 PVT = struct;                                  %  struct for data for all materials at chosen timestep
 Electrodes = struct;
 myDir = dir_name;
-myFiles = dir(fullfile(dir_name,'*.mat'));      % get all mat files in directory
+myFiles = dir(fullfile(dir_name,'*.mat'));      % get all mat files in struct
 for k = 1:length(myFiles)
   baseFileName = myFiles(k).name;
   fullFileName = fullfile(myDir, baseFileName);
@@ -78,16 +77,16 @@ for k = 1:length(myFiles)
   PVT(k).temperature = F0tdc(timestep);
   Electrodes(k).name = baseFileName;
   Electrodes(k).impedance = F0Electrodes(:,timestep);
-  save('F0_PVT_500.mat', 'PVT')
-  save('F0_Electrodes_500.mat', 'Electrodes')
+  save('F0_PVT_400.mat', 'PVT')
+  save('F0_Electrodes_400.mat', 'Electrodes')
 end
 
 
 %% 3 - 3D scatter plot
 
 % load data
-F0_PVT_500 = load('F0_PVT_500.mat').PVT;
-F0_Electrodes_500 = load('F0_Electrodes_500.mat').Electrodes;
+F0_PVT_500 = load('F0_PVT_400.mat').PVT;
+F0_Electrodes_500 = load('F0_Electrodes_400.mat').Electrodes;
 
 % get data into individual variables
 for i = 1:60
@@ -97,9 +96,6 @@ for i = 1:60
 end
 
 % scatter plot
-figure
-colours = linspace(1,1000,length(pressure));
-scatter3(pressure,vibration,temperature,20,colours,'filled')
 figure(5)
 colours = linspace(1,10,length(pressure));
 scatter3(pressure,vibration,temperature,10,colours,'filled')
@@ -107,23 +103,18 @@ xlabel('pressure')
 ylabel('vibration')
 zlabel('temperature')
 title('Scatter Plot for PVT at timestep 500')
-
-%% Section B - Principal Component Analysis
-A = [pressure;vibration;temperature];
-C = cov(A);
-% saveas(figure(5),[pwd '\results\Section_A\raw_scatter_plot_PVT.jpg']);
+saveas(figure(5),[pwd '\results\Section_A\raw_scatter_plot_PVT.jpg']);
 
 %% Section B.1 - Principal Component Analysis - PVT
 clc
 % get the covariance matrix
 A = [pressure;vibration;temperature];
 C = cov(A);                 % C = covaiance matrix
-% writematrix(C,[pwd '\results\Section_B\covariancematrix_PVT.csv']) 
+%writematrix(C,[pwd '\results\Section_B\covariancematrix_PVT.csv']) 
 
 % finding Eigenvectors
 [V,D] = eig(C);         % V = the corresponding eigenvectors 
 D=diag(D);              % these are the corresponding eigenvalues
-
 %writematrix(V,[pwd '\results\Section_B\eigenvectors_PVT.csv'])
 %writematrix(D,[pwd '\results\Section_B\eigenvalues_PVT.csv'])
 
@@ -155,7 +146,7 @@ ylabel('Vibration')
 zlabel('Temperature')
 title('Standarized Scatter Plot for F0 PVT Data at timestep 500')
 hold off
-% saveas(figure(6),[pwd '\results\Section_B\standardized_PCA_plot_PVT.jpg']);
+saveas(figure(6),[pwd '\results\Section_B\standardized_PCA_plot_PVT.jpg']);
 
 PC3_coeff = coeff(:,end); %Get last column as PC3
 PC2_coeff = coeff(:,2);   %Get SECOND column as PC2
@@ -263,135 +254,25 @@ saveas(figure(11),[pwd '\results\Section_B\projected_PCA_Scatter_3D_Electrodes.j
 
 %% Section C - Linear Discriminant Analysis
 
-% isolate data for black foam and car sponge
-names = [];
-pressure = [];
-vibration = [];
-temperature = [];
-
-for i = 11:20
-    names(i-10) = 0;
-    pressure(i-10) = F0_PVT_500(i).pressure;
-    vibration(i-10) = F0_PVT_500(i).vibration;
-    temperature(i-10) = F0_PVT_500(i).temperature;
-end
-for i = 21:30
-    names(i-10) = 1;
-    pressure(i-10) = F0_PVT_500(i).pressure;
-    vibration(i-10) = F0_PVT_500(i).vibration;
-    temperature(i-10) = F0_PVT_500(i).temperature;
-end
-
-% 1 - Split the training data in terms of different pairs of variables, perform LDA and plot
-
-% LDA pressure-vibration
-PV = [pressure;vibration]';
-PV_std = bsxfun(@minus,PV,mean(PV))./ std(PV); % standardise data
-MdlLinearPV = fitcdiscr(PV_std,names);
-K_PV = MdlLinearPV.Coeffs(1,2).Const;  
-L_PV = MdlLinearPV.Coeffs(1,2).Linear;
-
-% LDA pressure-temperature
-PT = [pressure;temperature]';
-PT_std = bsxfun(@minus,PT,mean(PT))./ std(PT); % standardise data
-MdlLinearPT = fitcdiscr(PT_std,names);
-K_PT = MdlLinearPT.Coeffs(1,2).Const;  
-L_PT = MdlLinearPT.Coeffs(1,2).Linear;
-
-% LDA temperature-vibration
-TV = [temperature;vibration]';
-TV_std = bsxfun(@minus,TV,mean(TV))./ std(TV);% standardise data
-MdlLinearTV = fitcdiscr(TV_std,names);
-K_TV = MdlLinearTV.Coeffs(1,2).Const;  
-L_TV = MdlLinearTV.Coeffs(1,2).Linear;
-
-colors = 'rgb';
-
-% plot pressure-vibration
-figure
-gscatter(PV_std(:,1),PV_std(:,2),names)
-hold on
-xlabel('pressure')
-ylabel('vibration')
-legend('black foam','car sponge','Location','southwest')
-title('Scatter Plot with LDA Discriminant Line for Vibration-Pressure')
-f_PV = @(x1,x2) K_PV + L_PV(1)*x1 + L_PV(2)*x2;
-h1 = fimplicit(f_PV);
-set(h1,'Color','k','LineWidth',1,'DisplayName','decision boundary')
-grid on
-
-% plot pressure-temperature
-figure
-gscatter(PT_std(:,1),PT_std(:,2),names)
-hold on
-xlabel('pressure')
-ylabel('temperature')
-legend('black foam','car sponge','Location','southwest')
-title('Scatter Plot with LDA Discriminant Line for Temperature-Pressure')
-f_PT = @(x1,x2) K_PT + L_PT(1)*x1 + L_PT(2)*x2;
-h2 = fimplicit(f_PT);
-set(h2,'Color','k','LineWidth',1,'DisplayName','decision boundary')
-grid on
-xlim([-2,1.5])
-ylim([-5,5])
-
-% plot temperature-vibration
-figure
-gscatter(TV_std(:,1),TV_std(:,2),names)
-hold on
-xlabel('temperature')
-ylabel('vibration')
-legend('black foam','car sponge','Location','southwest')
-title('Scatter Plot with LDA Discriminant Line for Vibration-Temperature')
-f_TV = @(x1,x2) K_TV + L_TV(1)*x1 + L_TV(2)*x2;
-h3 = fimplicit(f_TV);
-set(h3,'Color','k','LineWidth',1,'DisplayName','decision boundary')
-xlim([-2,1.5])
-ylim([-5,5])
-grid on
-
-%% 2 - Apply LDA to 3D data
-
-% LDA pressure-vibration-temperature
-PVT = [pressure;vibration;temperature]';
-PVT_std = bsxfun(@minus,PVT,mean(PVT))./ std(PVT);% standardise data
-MdlLinearPVT = fitcdiscr(PVT_std,names);
-K_PVT = MdlLinearPVT.Coeffs(1,2).Const;  
-L_PVT = MdlLinearPVT.Coeffs(1,2).Linear;
-
-% plot pressure-vibration-temperature
-colors = 'rgb';
-figure
-scatter3(PVT_std(1:10,1),PVT_std(1:10,2),PVT_std(1:10,3),colors(1),'filled')
-hold on
-scatter3(PVT_std(11:20,1),PVT_std(11:20,2),PVT_std(11:20,3),colors(2),'filled')
-grid on
-xlabel('pressure')
-ylabel('vibration')
-zlabel('temperature')
-title('Scatter Plot with LDA Discriminant Surface for Pressure-Vibration-Temperature')
-hold on
-f_PVT = @(x1,x2) K_PVT + L_PVT(1)*x1 + L_PVT(2)*x2;
-s1 = fsurf(f_PVT,'FaceColor',[0 0 1],'EdgeColor','none');
-set(s1,'DisplayName','decision boundary')
-alpha 0.5
-grid on
-legend('black foam','car sponge','decision surface','Location','northeast')
-
 %% Section D.1 - Clustering: K-Means Method
 clc
 opts = statset('Display','final');
 [idx,I,sum,D] = kmeans(A,3,'Replicates',10,'Options',opts);
 
 for v = 1:1:60
-   if idx(v,:) == 1
+   if idx(v) == 1
        C1(v,:) = A(v,:); 
-   elseif idx(v,:) == 2
+   elseif idx(v) == 2
        C2(v,:) = A(v,:);
-   elseif idx(v,:) == 3
+   elseif idx(v) == 3
        C3(v,:) = A(v,:);
    end
 end
+
+C1 = C(any(a,2),:);
+C1
+C2
+C3
 
 figure(12) 
 scatter3(A(:,1), A(:,2), A(:,3), 15, idx, 'filled');
@@ -403,3 +284,17 @@ zlabel('Temperature')
 legend('Cluster 1', 'Cluster 2', 'Cluster 3')
 title ('Cluster Assignments and Centroids')
 %hold off
+
+
+
+
+
+
+
+
+
+
+
+
+
+

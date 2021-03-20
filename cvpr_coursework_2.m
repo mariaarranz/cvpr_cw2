@@ -1,5 +1,5 @@
 %% COMPUTER VISION AND PATTERN RECOGNITION COURSEWORK 2: PATTERN RECOGNITION
-%  Patrick McCarthy, pm4617, CID:01353165 & Maria Arranz, ma8816, CID:01250685
+%  Patrick McCarthy, pm4617, CID:01353165 & Maria Arranz Fombellida, ma8816, CID:01250685
 
 %% Section A - Data Preparation
 clc
@@ -20,7 +20,7 @@ grid on
 xlabel('sample')
 ylabel('pressure')
 title(['Low Frequency Fluid Pressure for ',file_name],'Interpreter', 'none')
-saveas(figure(1),[pwd '\results\Section_A\pressure.jpg']);
+%saveas(figure(1),[pwd '\results\Section_A\pressure.jpg']);
 
 % plot vibration
 figure(2)
@@ -32,7 +32,7 @@ grid on
 xlabel('sample')
 ylabel('vibration')
 title(['High Frequency Fluid Vibrations for ',file_name],'Interpreter', 'none')
-saveas(figure(2),[pwd '\results\Section_A\vibration.jpg']);
+%saveas(figure(2),[pwd '\results\Section_A\vibration.jpg']);
 
 % plot temperature 
 figure(3)
@@ -44,7 +44,7 @@ grid on
 xlabel('sample')
 ylabel('temperature')
 title(['Core Temperature for ',file_name],'Interpreter', 'none')
-saveas(figure(3),[pwd '\results\Section_A\temperature.jpg']);
+%saveas(figure(3),[pwd '\results\Section_A\temperature.jpg']);
 
 % plot impedance 
 figure(4)
@@ -58,7 +58,7 @@ legend([h1 h2],'F0','F1')
 xlabel('sample')
 ylabel('impedance')
 title(['Electrode Impedance for ',file_name],'Interpreter', 'none')
-saveas(figure(4),[pwd '\results\Section_A\impedance.jpg']);
+%saveas(figure(4),[pwd '\results\Section_A\impedance.jpg']);
 
 % 2 - Sample data for one finger
 
@@ -97,10 +97,10 @@ for i = 1:60
 end
 
 % scatter plot
-figure
+figure(5)
 colours = linspace(1,1000,length(pressure));
 scatter3(pressure,vibration,temperature,20,colours,'filled')
-figure(5)
+figure(6)
 colours = linspace(1,10,length(pressure));
 scatter3(pressure,vibration,temperature,10,colours,'filled')
 xlabel('pressure')
@@ -108,14 +108,12 @@ ylabel('vibration')
 zlabel('temperature')
 title('Scatter Plot for PVT at timestep 500')
 
-%% Section B - Principal Component Analysis
-A = [pressure;vibration;temperature];
-C = cov(A);
-% saveas(figure(5),[pwd '\results\Section_A\raw_scatter_plot_PVT.jpg']);
-
 %% Section B.1 - Principal Component Analysis - PVT
 clc
 % get the covariance matrix
+Q = [pressure;vibration;temperature];
+Q = Q'
+
 A = [pressure;vibration;temperature];
 C = cov(A);                 % C = covaiance matrix
 % writematrix(C,[pwd '\results\Section_B\covariancematrix_PVT.csv']) 
@@ -144,7 +142,7 @@ coeff = coeff*-1;   % compared to SV and SD the eigenvector were multiplied by -
 coeff(:,end) = coeff(:,end)*-1; % the last eigenvector was as supposed to be so returning it to original
 
 % Re-plot scatter plot for standardized data
-figure(6)
+figure(7)
 colours = linspace(1,10,length(pressure));
 scatter3(A(:,1),A(:,2),A(:,3),10,colours,'filled')
 hold on
@@ -155,7 +153,7 @@ ylabel('Vibration')
 zlabel('Temperature')
 title('Standarized Scatter Plot for F0 PVT Data at timestep 500')
 hold off
-% saveas(figure(6),[pwd '\results\Section_B\standardized_PCA_plot_PVT.jpg']);
+% saveas(figure(7),[pwd '\results\Section_B\standardized_PCA_plot_PVT.jpg']);
 
 PC3_coeff = coeff(:,end); %Get last column as PC3
 PC2_coeff = coeff(:,2);   %Get SECOND column as PC2
@@ -170,7 +168,7 @@ coeff(:,end) = []; % Delete last column to get feature vector for 2D data
 P = A*coeff;    % Get 2D projected data
 
 % Re-plot scatter plot for standardized data
-figure(7)
+figure(8)
 colours = linspace(1,10,length(pressure));
 scatter(P(:,1),P(:,2),10,colours,'filled')
 %hold on
@@ -182,10 +180,10 @@ axis square
 xlabel('PC1')
 ylabel('PC2')
 title('Proejected onto Principle Components F0 PVT Data')
-saveas(figure(7),[pwd '\results\Section_B\projected_PCA_scatter_PVT.jpg'])
+%saveas(figure(8),[pwd '\results\Section_B\projected_PCA_scatter_PVT.jpg'])
 
 % Create projected matrix onto the Principle Components
-figure(8)
+figure(9)
 hAxes = axes('NextPlot','add',...             % Add subsequent plots to the axes
              'DataAspectRatio',[1 1 1],...    % match the scaling of each axis
              'YLim',[0.5 3.5],...             % set the y axis limit to show all PC
@@ -197,7 +195,7 @@ grid on
 yticks([1, 2, 3]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 PVT Data')
-saveas(figure(8),[pwd '\results\Section_B\1D_plot_PCA_PVT.jpg']);
+%saveas(figure(9),[pwd '\results\Section_B\1D_plot_PCA_PVT.jpg']);
 
 %% Section B.2 - Principal Component Analysis - Electrodes
 clc
@@ -217,13 +215,13 @@ maxeigvalE= SVE(:,find(SDE==max(SDE))); % Get first PC eigenvector
 [Ecoeff Escore eigenvalues] = pca(E); % Check that vatiables match with eigenvectors and eigenvalues found
 
 % Make scree plot of PC 
-figure(9)
+figure(10)
 plot(eigenvalues, 'b*-', 'MarkerSize',10); % Plot Eigenvalues per Component Number
 xlabel('Component Number') 
 ylabel('Eigenvalue')
 set(gca,'YTick',0:1:12) % Set more ticks in y-axis
 title('Variance PCA Scree Plot for F0 Electrode Data')
-saveas(figure(9),[pwd '\results\Section_B\scree_plot_electrodes.jpg']);
+%saveas(figure(10),[pwd '\results\Section_B\scree_plot_electrodes.jpg']);
 
 % Visualise data with first 3 PC
 PC3_Ecoeff = Ecoeff(:,3); % Get THIRD column as PC3
@@ -234,7 +232,7 @@ EPC2 = E*PC2_Ecoeff;     % Project data onto PC2 as 1D
 EPC3 = E*PC3_Ecoeff;     % Project data onto PC3 as 1D
 
 % Create projected matrix onto the Principle Components 1D
-figure(10)
+figure(11)
 hAxes = axes('NextPlot','add',...           % Add subsequent plots to the axes,
              'DataAspectRatio',[1 1 1],...  % match the scaling of each axis,
              'YLim',[0 20],...              % set the y axis limit,
@@ -246,20 +244,20 @@ grid on
 yticks([5, 10, 15]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 Electrodes')
-saveas(figure(10),[pwd '\results\Section_B\1D_plot_PCA_Electrodes.jpg']);
+%saveas(figure(11),[pwd '\results\Section_B\1D_plot_PCA_Electrodes.jpg']);
 
 J = [EPC1 EPC2 EPC3]; % Combine projected data onto PC vectors into one data matrix
 J_coeff = [PC1_Ecoeff PC2_Ecoeff PC3_Ecoeff]; % Combine PC vectors into one data matrix
 
 % Plot the 3D projected Data onto top 3 variance PC
-figure(11)
+figure(12)
 colours = linspace(1,10,length(EPC1));
 scatter3(J(:,1),J(:,2),J(:,3),10,colours,'filled') % Plot the projected data onto first 3 PC
 xlabel('PC1')
 ylabel('PC2')
 zlabel('PC3')
 title('Projection for first 3 PC of Electrode Data')
-saveas(figure(11),[pwd '\results\Section_B\projected_PCA_Scatter_3D_Electrodes.jpg']);
+%saveas(figure(12),[pwd '\results\Section_B\projected_PCA_Scatter_3D_Electrodes.jpg']);
 
 %% Section C - Linear Discriminant Analysis
 
@@ -308,7 +306,7 @@ L_TV = MdlLinearTV.Coeffs(1,2).Linear;
 colors = 'rgb';
 
 % plot pressure-vibration
-figure
+figure(13)
 gscatter(PV_std(:,1),PV_std(:,2),names)
 hold on
 xlabel('pressure')
@@ -321,7 +319,7 @@ set(h1,'Color','k','LineWidth',1,'DisplayName','decision boundary')
 grid on
 
 % plot pressure-temperature
-figure
+figure(14)
 gscatter(PT_std(:,1),PT_std(:,2),names)
 hold on
 xlabel('pressure')
@@ -336,7 +334,7 @@ xlim([-2,1.5])
 ylim([-5,5])
 
 % plot temperature-vibration
-figure
+figure(15)
 gscatter(TV_std(:,1),TV_std(:,2),names)
 hold on
 xlabel('temperature')
@@ -361,7 +359,7 @@ L_PVT = MdlLinearPVT.Coeffs(1,2).Linear;
 
 % plot pressure-vibration-temperature
 colors = 'rgb';
-figure
+figure(16)
 scatter3(PVT_std(1:10,1),PVT_std(1:10,2),PVT_std(1:10,3),colors(1),'filled')
 hold on
 scatter3(PVT_std(11:20,1),PVT_std(11:20,2),PVT_std(11:20,3),colors(2),'filled')
@@ -379,27 +377,129 @@ grid on
 legend('black foam','car sponge','decision surface','Location','northeast')
 
 %% Section D.1 - Clustering: K-Means Method
+% reference: https://uk.mathworks.com/help/stats/kmeans.html#bue6nc4-1
 clc
 opts = statset('Display','final');
 [idx,I,sum,D] = kmeans(A,3,'Replicates',10,'Options',opts);
 
-for v = 1:1:60
-   if idx(v,:) == 1
-       C1(v,:) = A(v,:); 
-   elseif idx(v,:) == 2
-       C2(v,:) = A(v,:);
-   elseif idx(v,:) == 3
-       C3(v,:) = A(v,:);
-   end
-end
-
-figure(12) 
+figure(17) 
 scatter3(A(:,1), A(:,2), A(:,3), 15, idx, 'filled');
 xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
-%plot(I(:,1),I(:,2),'kx')
+hold on
+plot(I(:,1),I(:,2),'kx')
 %scatter3(I(:,1), I(:,2), I(:,3), 4,'Marker','x','LineWidth',10)
-legend('Cluster 1', 'Cluster 2', 'Cluster 3')
-title ('Cluster Assignments and Centroids')
-%hold off
+title ('Cluster Assignments and Centroids using K-Means')
+hold off
+
+%% Section D.1.a - Clustering: Hierarchical Clustering using Eucledian Distance Metric
+% reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
+clc
+
+% For the following code we use the eucledican distance metric (default)
+% and the single method for computing the distance (shortest distance - default)
+
+Z = linkage(Q); % original un-standardized data (can be seen in Section B.1)
+c = cluster(Z,'Maxclust',3); % create the clustering using 3 clusters 
+cutoff = median([Z(end-2,3) Z(end-1,3)]);
+
+figure(18)
+dendrogram(Z,'ColorThreshold',cutoff) % create teh dendrogram using the linkage of the data
+ylabel('Distance')
+xlabel('Data Point')
+title ('Dendogram of PVT Raw Data using Eucledian Distance Metric')
+
+figure(19)
+scatter3(Q(:,1),Q(:,2),Q(:,3),15,c, 'filled') % plot data and separate depending on cluster of linkage
+xlabel('Pressure')
+ylabel('Vibration')
+zlabel('Temperature')
+title ('Raw Data Clustering using Eucledian Distance Metric')
+
+
+%% Section D.1.b - Clustering: Hierarchical Clustering using Eucledian Distance Metric
+% reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
+clc
+
+% For the following code we use the manhattan distance metric (cityblock)
+% and the single method for computing the distance (shortest distance - default)
+
+Zb = linkage(Q,'single','cityblock'); % original un-standardized data (can be seen in Section B.1)
+cb = cluster(Zb,'Maxclust',3); % create the clustering using 3 clusters 
+cutoff = median([Zb(end-2,3) Zb(end-1,3)]);
+
+figure(20)
+dendrogram(Zb,'ColorThreshold',cutoff) % create teh dendrogram using the linkage of the data
+ylabel('Distance')
+xlabel('Data Point')
+title ('Dendogram of PVT Raw Data using Manhattan Distance Metric')
+
+figure(21)
+scatter3(Q(:,1),Q(:,2),Q(:,3),15,cb, 'filled') % plot data and separate depending on cluster of linkage
+xlabel('Pressure')
+ylabel('Vibration')
+zlabel('Temperature')
+title ('Raw Data Clustering using Manhattan Distance Metric')
+
+%% Section D.2 - Bagging
+clc
+% reference: https://uk.mathworks.com/matlabcentral/answers/377839-split-training-data-and-testing-data
+
+% Take the electrode data processed by PCA in Section B.2 (original
+% un-standardized data (can be seen in Section B.1))
+data = J;
+% Cross varidation (train: 60%, test: 40%)
+cv = cvpartition(size(data,1),'HoldOut',0.4);
+idx = cv.test;
+% Separate to training and test data
+dataTrain = data(~idx,:);
+dataTest  = data(idx,:);
+
+Ztrain = linkage(dataTrain); 
+ctrain = cluster(Ztrain,'Maxclust',3); % create the clustering using 3 clusters 
+
+MdlTrain = TreeBagger(1000,dataTrain,ctrain,'OOBPrediction','On','Method','classification','OOBPredictorImportance','off')
+
+view(MdlTrain.Trees{1},'Mode','graph')
+view(MdlTrain.Trees{2},'Mode','graph')
+
+figure(22)
+oobErrorBaggedEnsembleTrain = oobError(MdlTrain);
+plot(oobErrorBaggedEnsembleTrain)
+grid on
+xlabel ('Number of grown trees')
+ylabel ('Out-of-bag classification error')
+
+predicted_class = [];
+for i=1:size(dataTest,1)
+    predicted = predict(MdlTrain, dataTest(i,:));
+    predicted = cell2mat(predicted);    
+    predicted = str2double(predicted);
+    predicted_class = [predicted_class; {predicted}];
+end
+
+Ztest = linkage(dataTest); % original un-standardized data (can be seen in Section B.1)
+ctest = cluster(Ztest,'Maxclust',3); % create the clustering using 3 clusters 
+
+predicted_class = cell2mat(predicted_class);
+
+g1 = ctest;	% Known groups
+g2 = predicted_class;	% Predicted groups
+
+%confusion_matrix = confusionmat(g1,g2)
+confusionchart(g1,g2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

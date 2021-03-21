@@ -265,10 +265,10 @@ scatter3(J(:,1),J(:,2),J(:,3),10,colours,'filled') % Plot the projected data ont
 xlabel('PC1')
 ylabel('PC2')
 zlabel('PC3')
-axis([-6 6 -6 6 -6 6])
-axis square
+%axis([-6 6 -6 6 -6 6])
+%axis square
 title('Projection for first 3 PC of Electrode Data')
-saveas(figure(12),[pwd '\results\Section_B\projected_PCA_Scatter_3D_Electrodes.jpg']);
+%saveas(figure(12),[pwd '\results\Section_B\projected_PCA_Scatter_3D_Electrodes.jpg']);
 
 %% Section C - Linear Discriminant Analysis
 

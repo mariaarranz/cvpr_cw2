@@ -82,9 +82,8 @@ for k = 1:length(myFiles)
   save('F0_Electrodes_500.mat', 'Electrodes')
 end
 
-
 %% 3 - 3D scatter plot
-
+clc
 % load data
 F0_PVT_500 = load('F0_PVT_500.mat').PVT;
 F0_Electrodes_500 = load('F0_Electrodes_500.mat').Electrodes;
@@ -112,18 +111,14 @@ title('Scatter Plot for PVT at timestep 500')
 clc
 % get the covariance matrix
 Q = [pressure;vibration;temperature];
-Q = Q'
+Q = Q';
 
 A = [pressure;vibration;temperature];
 C = cov(A);                 % C = covaiance matrix
-% writematrix(C,[pwd '\results\Section_B\covariancematrix_PVT.csv']) 
 
 % finding Eigenvectors
 [V,D] = eig(C);         % V = the corresponding eigenvectors 
 D=diag(D);              % these are the corresponding eigenvalues
-
-%writematrix(V,[pwd '\results\Section_B\eigenvectors_PVT.csv'])
-%writematrix(D,[pwd '\results\Section_B\eigenvalues_PVT.csv'])
 
 % returns the eigenvector for the maximum eigenvalue
 maxeigval= V(:,find(D==max(D))); 
@@ -136,8 +131,13 @@ A = bsxfun(@minus,A',mean(A'))./ std(A');
 
 % Calculate eigenvalues and eigenvectors of the covariance matrix
 SC = cov(A);
-[SV,SD] = eig(SC);
+%writematrix(SC,[pwd '\results\Section_B\covariancematrix_PVT_standardized.csv'])
+
+[SV,SD] = eig(SC)
+%writematrix(SD,[pwd '\results\Section_B\eigenvalues_PVT_standardized.csv'])
 SD=diag(SD);
+%writematrix(SV,[pwd '\results\Section_B\eigenvectors_PVT_standardized.csv'])
+
 coeff = coeff*-1;   % compared to SV and SD the eigenvector were multiplied by -1 except the last column (unknown why)
 coeff(:,end) = coeff(:,end)*-1; % the last eigenvector was as supposed to be so returning it to original
 
@@ -396,16 +396,15 @@ hold off
 %% Section D.1.a - Clustering: Hierarchical Clustering using Eucledian Distance Metric
 % reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
 clc
-
 % For the following code we use the eucledican distance metric (default)
 % and the single method for computing the distance (shortest distance - default)
 
 Z = linkage(Q); % original un-standardized data (can be seen in Section B.1)
-c = cluster(Z,'Maxclust',3); % create the clustering using 3 clusters 
-cutoff = median([Z(end-2,3) Z(end-1,3)]);
+c = cluster(Z,'Maxclust',6); % create the clustering using 3 clusters 
+%cutoff = median([Z(end-2,3) Z(end-1,3)]);
 
 figure(18)
-dendrogram(Z,'ColorThreshold',cutoff) % create teh dendrogram using the linkage of the data
+dendrogram(Z) % create teh dendrogram using the linkage of the data
 ylabel('Distance')
 xlabel('Data Point')
 title ('Dendogram of PVT Raw Data using Eucledian Distance Metric')
@@ -426,11 +425,11 @@ clc
 % and the single method for computing the distance (shortest distance - default)
 
 Zb = linkage(Q,'single','cityblock'); % original un-standardized data (can be seen in Section B.1)
-cb = cluster(Zb,'Maxclust',3); % create the clustering using 3 clusters 
-cutoff = median([Zb(end-2,3) Zb(end-1,3)]);
+cb = cluster(Zb,'Maxclust',6); % create the clustering using 3 clusters 
+%cutoff = median([Zb(end-2,3) Zb(end-1,3)]);
 
 figure(20)
-dendrogram(Zb,'ColorThreshold',cutoff) % create teh dendrogram using the linkage of the data
+dendrogram(Zb) % create teh dendrogram using the linkage of the data
 ylabel('Distance')
 xlabel('Data Point')
 title ('Dendogram of PVT Raw Data using Manhattan Distance Metric')
@@ -457,9 +456,9 @@ dataTrain = data(~idx,:);
 dataTest  = data(idx,:);
 
 Ztrain = linkage(dataTrain); 
-ctrain = cluster(Ztrain,'Maxclust',3); % create the clustering using 3 clusters 
+ctrain = cluster(Ztrain,'Maxclust',6); % create the clustering using 6 clusters 
 
-MdlTrain = TreeBagger(1000,dataTrain,ctrain,'OOBPrediction','On','Method','classification','OOBPredictorImportance','off')
+MdlTrain = TreeBagger(100,dataTrain,ctrain,'OOBPrediction','On','Method','classification','OOBPredictorImportance','off')
 
 view(MdlTrain.Trees{1},'Mode','graph')
 view(MdlTrain.Trees{2},'Mode','graph')
@@ -471,6 +470,8 @@ grid on
 xlabel ('Number of grown trees')
 ylabel ('Out-of-bag classification error')
 
+%%
+clc
 predicted_class = [];
 for i=1:size(dataTest,1)
     predicted = predict(MdlTrain, dataTest(i,:));
@@ -480,18 +481,14 @@ for i=1:size(dataTest,1)
 end
 
 Ztest = linkage(dataTest); % original un-standardized data (can be seen in Section B.1)
-ctest = cluster(Ztest,'Maxclust',3); % create the clustering using 3 clusters 
+ctest = cluster(Ztest,'Maxclust',6); % create the clustering using 3 clusters 
 
 predicted_class = cell2mat(predicted_class);
 
 g1 = ctest;	% Known groups
 g2 = predicted_class;	% Predicted groups
 
-%confusion_matrix = confusionmat(g1,g2)
 confusionchart(g1,g2)
-
-
-
 
 
 

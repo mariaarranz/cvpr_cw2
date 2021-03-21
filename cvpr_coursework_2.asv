@@ -483,7 +483,7 @@ plot(oobErrorBaggedEnsembleTrain)
 grid on
 xlabel ('Number of grown trees')
 ylabel ('Out-of-bag classification error')
-%saveas(figure(22),[pwd '\results\Section_D\oob_error.jpg']);
+%saveas(figure(22),[pwd '\results\Section_D\hierarchical_euclidean.jpg']);
 
 %% Section D.2.c - Confusion Matrix
 clc
@@ -506,5 +506,3 @@ g2 = predicted_class;	% Predicted groups
 % generate the confusion chart/matrix
 figure(23)
 confusionchart(g1,g2)
-%saveas(figure(23),[pwd '\results\Section_D\confusion_chart.jpg']);
-

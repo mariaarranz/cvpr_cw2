@@ -33,12 +33,11 @@
       - Comment on the outcome. Do the clusters correspond to real-life object similarities?
       - Change the distance metric, repeat the clustering and comment on the change in the outcome.
       
-2. Now apply the same clustering algorithm to the electrode data that was processed with PCA
-from in B.2.b
-      - Visualise the output.
-      - Apply Bagging (report your parameters) to the (PCA) electrode data and run the clustering algorithm again.
-      - Visualise the new output.
-      - Comment on your findings.
+2.Now apply bagging (bootstrap aggregation for an ensemble of decision trees) to the electrode data that was processed with PCA in section B.2.b. Use a 60 / 40 split for Training / Test data.
+      - Specify the number of bags / trees you used. Why did you choose this number?
+      - Visualise two of your generated decision trees.
+      - Run the trained model with the test data. Display a confusion matrix (where the object type is the class) and comment on the overall accuracy.
+      - Discuss the following: How can misclassifications in your results be explained given the object properties? Do you think the PCA step was helpful?
 
 ## Section E: Conclusion
 1. Summarise your work.

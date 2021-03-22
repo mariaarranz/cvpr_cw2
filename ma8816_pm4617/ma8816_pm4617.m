@@ -58,7 +58,7 @@ xlabel('sample')
 ylabel('impedance')
 title(['Electrode Impedance for ',file_name],'Interpreter', 'none')
 
-saveas(figure(1),[pwd '\results\Section_A\Section_A_Part_1.jpg']);
+saveas(figure(1),[pwd '\figures\Section_A_Part_1.jpg']);
 
 % 2 - Sample data for one finger
 timestep = 500;                                 % sample to use for comparison
@@ -96,13 +96,14 @@ end
 
 % scatter plot
 figure(2)
+set(gcf,'position',get(0,'ScreenSize'))
 colours = linspace(1,10,length(pressure));
-scatter3(pressure,vibration,temperature,10,colours,'filled')
+scatter3(pressure,vibration,temperature,15,colours,'filled')
 xlabel('pressure')
 ylabel('vibration')
 zlabel('temperature')
 title('Scatter Plot for PVT at timestep 500')
-saveas(figure(2),[pwd '\results\Section_A\Section_A_Part_3.jpg']);
+saveas(figure(2),[pwd '\figures\Section_A_Part_3.jpg']);
 
 %% Section B.1 - Principal Component Analysis - PVT
 clc
@@ -128,12 +129,9 @@ A = bsxfun(@minus,A',mean(A'))./ std(A');
 
 % Calculate eigenvalues and eigenvectors of the covariance matrix
 SC = cov(A);
-%writematrix(SC,[pwd '\results\Section_B\covariancematrix_PVT_standardized.csv'])
 
 [SV,SD] = eig(SC);
-%writematrix(SD,[pwd '\results\Section_B\eigenvalues_PVT_standardized.csv'])
 SD=diag(SD);
-%writematrix(SV,[pwd '\results\Section_B\eigenvectors_PVT_standardized.csv'])
 
 coeff = coeff*-1;   % compared to SV and SD the eigenvector were multiplied by -1 except the last column (unknown why)
 coeff(:,end) = coeff(:,end)*-1; % the last eigenvector was as supposed to be so returning it to original
@@ -174,10 +172,11 @@ axis square
 xlabel('PC1')
 ylabel('PC2')
 title('Proejected onto Principle Components F0 PVT Data')
-saveas(figure(3),[pwd '\results\Section_B\Section_B_Part_1b-c.jpg']);
+saveas(figure(3),[pwd '\figures\Section_B_Part_1b-c.jpg']);
 
 % Create projected matrix onto the Principle Components
 figure(4)
+set(gcf,'position',get(0,'ScreenSize'))
 hAxes = axes('NextPlot','add',...             % Add subsequent plots to the axes
              'DataAspectRatio',[1 1 1],...    % match the scaling of each axis
              'YLim',[0.5 3.5],...             % set the y axis limit to show all PC
@@ -189,7 +188,7 @@ grid on
 yticks([1, 2, 3]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 PVT Data')
-saveas(figure(4),[pwd '\results\Section_B\Section_B_Part_1d.jpg']);
+saveas(figure(4),[pwd '\figures\Section_B_Part_1d.jpg']);
 
 %% Section B.2 - Principal Component Analysis - Electrodes
 clc
@@ -249,10 +248,11 @@ zlabel('PC3')
 axis([-6 6 -6 6 -6 6])
 axis square
 title('Projection for first 3 PC of Electrode Data')
-saveas(figure(5),[pwd '\results\Section_B\Section_B_Part_2.jpg']);
+saveas(figure(5),[pwd '\figures\Section_B_Part_2.jpg']);
 
 % Create projected matrix onto the Principle Components 1D
 figure(6)
+set(gcf,'position',get(0,'ScreenSize'))
 hAxes = axes('NextPlot','add',...           % Add subsequent plots to the axes,
              'DataAspectRatio',[1 1 1],...  % match the scaling of each axis,
              'YLim',[0 20],...              % set the y axis limit,
@@ -265,7 +265,7 @@ xlim([-10 10])
 yticks([5, 10, 15]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 Electrodes')
-saveas(figure(6),[pwd '\results\Section_B\Section_B_Part_2_Extra.jpg']);
+saveas(figure(6),[pwd '\figures\Section_B_Part_2_Extra.jpg']);
 
 %% Section C - Linear Discriminant Analysis
 
@@ -357,7 +357,7 @@ set(h3,'Color','k','LineWidth',1,'DisplayName','decision boundary')
 xlim([-2,1.5])
 ylim([-5,5])
 grid on
-saveas(figure(7),[pwd '\results\Section_C\Section_C_Part_1a.jpg']);
+saveas(figure(7),[pwd '\figures\Section_C_Part_1a.jpg']);
 
 %% 2 - Apply LDA to 3D data
 
@@ -371,6 +371,7 @@ L_PVT = MdlLinearPVT.Coeffs(1,2).Linear;
 % plot pressure-vibration-temperature
 colors = 'rgb';
 figure(8)
+set(gcf,'position',get(0,'ScreenSize'))
 scatter3(PVT_std(1:10,1),PVT_std(1:10,2),PVT_std(1:10,3),colors(1),'filled')
 hold on
 scatter3(PVT_std(11:20,1),PVT_std(11:20,2),PVT_std(11:20,3),colors(2),'filled')
@@ -386,9 +387,9 @@ set(s1,'DisplayName','decision boundary')
 alpha 0.5
 grid on
 legend('black foam','car sponge','decision surface','Location','northeast')
-saveas(figure(8),[pwd '\results\Section_C\Section_C_Part_1b.jpg']);
+saveas(figure(8),[pwd '\figures\Section_C_Part_1b.jpg']);
 
-%% Section D.1 - Clustering: K-Means Method
+%% Section D - Clustering: K-Means Method
 % reference: https://uk.mathworks.com/help/stats/kmeans.html#bue6nc4-1
 clc
 opts = statset('Display','final');
@@ -396,7 +397,8 @@ opts = statset('Display','final');
 
 % plot K-Means 3D Scatter Plot with centroids
 figure(9) 
-scatter3(A(:,1), A(:,2), A(:,3), 15, idx, 'filled');
+set(gcf,'position',get(0,'ScreenSize'))
+scatter3(A(:,1), A(:,2), A(:,3), 20, idx, 'filled');
 xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
@@ -455,7 +457,7 @@ xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
 title ('Raw Data Clustering using Manhattan Distance Metric')
-saveas(figure(10),[pwd '\results\Section_D\Section_D_Part_1.jpg']);
+saveas(figure(10),[pwd '\figures\Section_D_Part_1.jpg']);
 
 %% Section D.2.b - Bagging
 clc
@@ -490,7 +492,7 @@ set(gcf,'position',get(0,'ScreenSize'))
 oobErrorBaggedEnsembleTrain = oobError(Mdl); % get the oob error of the train model
 plot(oobErrorBaggedEnsembleTrain)
 grid on
-xlabel ('Number of grown trees')
+xlabel ('Number of trees')
 ylabel ('Out-of-bag classification error')
 
 % Section D.2.c - Confusion Matrix
@@ -515,5 +517,5 @@ g2 = predicted_class;	% Predicted groups
 % generate the confusion chart/matrix
 subplot(1,2,2);
 confusionchart(g1,g2)
-saveas(figure(11),[pwd '\results\Section_D\Section_D_Part_2.jpg']);
+saveas(figure(11),[pwd '\figures\Section_D_Part_2.jpg']);
 

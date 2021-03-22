@@ -416,22 +416,22 @@ c = cluster(Z,'Maxclust',6); % create the clustering using 6 clusters
 
 % Plot dendrogram using euclidean metric
 figure(10)
-set(gcf,'position',get(0,'ScreenSize'))
-subplot(2,2,3);
 dendrogram(Z) % create the dendrogram using the linkage of the data
 ylabel('Distance')
 xlabel('Data Point')
 title ('Dendogram of PVT Raw Data using Eucledian Distance Metric')
+%saveas(figure(18),[pwd '\results\Section_D\dendrogram_euclidean.jpg']);
 
 % Plot clustering scatter plot using Euclidean Metric
-subplot(2,2,1);
+figure(19)
 scatter3(Q(:,1),Q(:,2),Q(:,3),15,c, 'filled') % plot data and separate depending on cluster of linkage
 xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
 title ('Raw Data Clustering using Euclidean Distance Metric')
+%saveas(figure(19),[pwd '\results\Section_D\hierarchical_euclidean.jpg']);
 
-% Section D.1.b - Clustering: Hierarchical Clustering using Eucledian Distance Metric
+%% Section D.1.b - Clustering: Hierarchical Clustering using Eucledian Distance Metric
 % reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
 clc
 
@@ -442,20 +442,21 @@ Zb = linkage(Q,'single','cityblock'); % original un-standardized data (can be se
 cb = cluster(Zb,'Maxclust',6); % create the clustering using 6 clusters 
 
 % Plot dendrogram using manhattan metric
-subplot(2,2,4);
+figure(20)
 dendrogram(Zb) % create the dendrogram using the linkage of the data
 ylabel('Distance')
 xlabel('Data Point')
 title ('Dendogram of PVT Raw Data using Manhattan Distance Metric')
+%saveas(figure(20),[pwd '\results\Section_D\dendrogram_manhattan.jpg']);
 
 % Plot clustering scatter plot using Manhattan Metric
-subplot(2,2,2);
+figure(21)
 scatter3(Q(:,1),Q(:,2),Q(:,3),15,cb, 'filled') % plot data and separate depending on cluster of linkage
 xlabel('Pressure')
 ylabel('Vibration')
 zlabel('Temperature')
 title ('Raw Data Clustering using Manhattan Distance Metric')
-saveas(figure(10),[pwd '\results\Section_D\Section_D_Part_1.jpg']);
+%saveas(figure(21),[pwd '\results\Section_D\hierarchical_manhattan.jpg']);
 
 %% Section D.2.b - Bagging
 clc
@@ -484,16 +485,17 @@ view(Mdl.Trees{1},'Mode','graph') % view the first tree generated
 view(Mdl.Trees{2},'Mode','graph') % view the second tree generated
 
 % plot the out of bag (oob) error for the model
-figure(11)
-subplot(1,2,1);
-set(gcf,'position',get(0,'ScreenSize'))
+figure(22)
 oobErrorBaggedEnsembleTrain = oobError(Mdl); % get the oob error of the train model
 plot(oobErrorBaggedEnsembleTrain)
 grid on
 xlabel ('Number of grown trees')
 ylabel ('Out-of-bag classification error')
+% saveas(figure(22),[pwd '\results\Section_D\out-of-bag-error.jpg']);
 
-% Section D.2.c - Confusion Matrix
+%% Section D.2.c - Confusion Matrix
+clc
+
 classTest = dataTest(:,1);
 Dtest = [];
 for i=[2:4]
@@ -513,7 +515,7 @@ g1 = classTest;	% Known groups
 g2 = predicted_class;	% Predicted groups
 
 % generate the confusion chart/matrix
-subplot(1,2,2);
+figure(23)
 confusionchart(g1,g2)
-saveas(figure(11),[pwd '\results\Section_D\Section_D_Part_2.jpg']);
+% saveas(figure(23),[pwd '\results\Section_D\confusion_matrix.jpg']);
 

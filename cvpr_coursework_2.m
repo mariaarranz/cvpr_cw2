@@ -507,7 +507,7 @@ for i=1:size(Dtest,1) % loop through the split test data
     predicted = str2double(predicted); % convert character values into double matrix
     predicted_class = [predicted_class; {predicted}]; % append the predicted values to the predicted_class matrix
 end
-predicted_class = cell2mat(predicted_class) % convert cell type to matrix type
+predicted_class = cell2mat(predicted_class); % convert cell type to matrix type
 
 g1 = classTest;	% Known groups
 g2 = predicted_class;	% Predicted groups

@@ -409,14 +409,14 @@ title ('Cluster Assignments and Centroids using K-Means')
 hold off
 %saveas(figure(17),[pwd '\results\Section_D\k-means.jpg']);
 
-%% Section D.1.a - Clustering: Hierarchical Clustering using Eucledian Distance Metric
+%% Section D.1.a - Clustering: Hierarchical Clustering using Euclidean Distance Metric
 % reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
 clc
-% For the following code we use the eucledican distance metric (default)
+% For the following code we use the euclidean distance metric (default)
 % and the single method for computing the distance (shortest distance - default)
 
 Z = linkage(Q); % original un-standardized data (can be seen in Section B.1)
-c = cluster(Z,'Maxclust',6); % create the clustering using 6 clusters 
+c = cluster(Z,'Maxclust',3); % create the clustering using 6 clusters 
 
 % Plot dendrogram using euclidean metric
 figure(18)
@@ -435,7 +435,7 @@ zlabel('Temperature')
 title ('Raw Data Clustering using Euclidean Distance Metric')
 %saveas(figure(19),[pwd '\results\Section_D\hierarchical_euclidean.jpg']);
 
-%% Section D.1.b - Clustering: Hierarchical Clustering using Eucledian Distance Metric
+%% Section D.1.b - Clustering: Hierarchical Clustering using Manhattan Distance Metric
 % reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
 clc
 
@@ -443,7 +443,7 @@ clc
 % and the single method for computing the distance (shortest distance - default)
 
 Zb = linkage(Q,'single','cityblock'); % original un-standardized data (can be seen in Section B.1)
-cb = cluster(Zb,'Maxclust',6); % create the clustering using 6 clusters 
+cb = cluster(Zb,'Maxclust',3); % create the clustering using 6 clusters 
 
 % Plot dendrogram using manhattan metric
 figure(20)
@@ -490,12 +490,12 @@ view(Mdl.Trees{2},'Mode','graph') % view the second tree generated
 
 % plot the out of bag (oob) error for the model
 figure(22)
-oobErrorBaggedEnsembleTrain = oobError(MdlTrain); % get the oob error of the train model
+oobErrorBaggedEnsembleTrain = oobError(Mdl); % get the oob error of the train model
 plot(oobErrorBaggedEnsembleTrain)
 grid on
 xlabel ('Number of grown trees')
 ylabel ('Out-of-bag classification error')
-saveas(figure(22),[pwd '\results\Section_D\out-of-bag-error.jpg']);
+%saveas(figure(22),[pwd '\results\Section_D\out-of-bag-error.jpg']);
 
 %% Section D.2.c - Confusion Matrix
 clc

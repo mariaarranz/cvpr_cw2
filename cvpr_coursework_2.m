@@ -227,7 +227,7 @@ xlabel('Component Number')
 ylabel('Eigenvalue')
 set(gca,'YTick',0:1:15) % Set more ticks in y-axis
 title('Variance PCA Scree Plot for F0 Electrode Data')
-saveas(figure(10),[pwd '\results\Section_B\scree_plot_electrodes.jpg']);
+% saveas(figure(10),[pwd '\results\Section_B\scree_plot_electrodes.jpg']);
 
 % Visualise data with first 3 PC
 PC3_Ecoeff = Ecoeff(:,3); % Get THIRD column as PC3
@@ -251,7 +251,7 @@ xlim([-10 10])
 yticks([5, 10, 15]) % Show only ticks for the 3 PC
 yticklabels({'PC1', 'PC2', 'PC3'}) % Replace tick values with PC names
 title('1D PCA Plots for F0 Electrodes')
-saveas(figure(11),[pwd '\results\Section_B\1D_plot_PCA_Electrodes.jpg']);
+% saveas(figure(11),[pwd '\results\Section_B\1D_plot_PCA_Electrodes.jpg']);
 
 J = [EPC1 EPC2 EPC3]; % Combine projected data onto PC vectors into one data matrix
 J_coeff = [PC1_Ecoeff PC2_Ecoeff PC3_Ecoeff]; % Combine PC vectors into one data matrix
@@ -328,7 +328,7 @@ f_PV = @(x1,x2) K_PV + L_PV(1)*x1 + L_PV(2)*x2;
 h1 = fimplicit(f_PV);
 set(h1,'Color','k','LineWidth',1,'DisplayName','decision boundary')
 grid on
-saveas(figure(13),[pwd '\results\Section_C\LDA_pressure-vibration.jpg']);
+% saveas(figure(13),[pwd '\results\Section_C\LDA_pressure-vibration.jpg']);
 
 % plot pressure-temperature
 figure(14)
@@ -344,7 +344,7 @@ set(h2,'Color','k','LineWidth',1,'DisplayName','decision boundary')
 grid on
 xlim([-2,1.5])
 ylim([-5,5])
-saveas(figure(14),[pwd '\results\Section_C\LDA_pressure-temperature.jpg']);
+% saveas(figure(14),[pwd '\results\Section_C\LDA_pressure-temperature.jpg']);
 
 % plot temperature-vibration
 figure(15)
@@ -360,7 +360,7 @@ set(h3,'Color','k','LineWidth',1,'DisplayName','decision boundary')
 xlim([-2,1.5])
 ylim([-5,5])
 grid on
-saveas(figure(15),[pwd '\results\Section_C\LDA_temperature-vibration.jpg']);
+% saveas(figure(15),[pwd '\results\Section_C\LDA_temperature-vibration.jpg']);
 
 %% 2 - Apply LDA to 3D data
 
@@ -389,7 +389,7 @@ set(s1,'DisplayName','decision boundary')
 alpha 0.5
 grid on
 legend('black foam','car sponge','decision surface','Location','northeast')
-saveas(figure(16),[pwd '\results\Section_C\LDA_3D_plot.jpg']);
+% saveas(figure(16),[pwd '\results\Section_C\LDA_3D_plot.jpg']);
 
 %% Section D.1 - Clustering: K-Means Method
 % reference: https://uk.mathworks.com/help/stats/kmeans.html#bue6nc4-1
@@ -409,14 +409,14 @@ title ('Cluster Assignments and Centroids using K-Means')
 hold off
 %saveas(figure(17),[pwd '\results\Section_D\k-means.jpg']);
 
-%% Section D.1.a - Clustering: Hierarchical Clustering using Euclidean Distance Metric
+%% Section D.1.a - Clustering: Hierarchical Clustering using Eucledian Distance Metric
 % reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
 clc
-% For the following code we use the euclidean distance metric (default)
+% For the following code we use the eucledican distance metric (default)
 % and the single method for computing the distance (shortest distance - default)
 
 Z = linkage(Q); % original un-standardized data (can be seen in Section B.1)
-c = cluster(Z,'Maxclust',3); % create the clustering using 6 clusters 
+c = cluster(Z,'Maxclust',6); % create the clustering using 6 clusters 
 
 % Plot dendrogram using euclidean metric
 figure(18)
@@ -435,7 +435,7 @@ zlabel('Temperature')
 title ('Raw Data Clustering using Euclidean Distance Metric')
 %saveas(figure(19),[pwd '\results\Section_D\hierarchical_euclidean.jpg']);
 
-%% Section D.1.b - Clustering: Hierarchical Clustering using Manhattan Distance Metric
+%% Section D.1.b - Clustering: Hierarchical Clustering using Eucledian Distance Metric
 % reference: https://uk.mathworks.com/help/stats/linkage.html#mw_59e9693d-3784-4a0d-89dd-5dd020a605b2
 clc
 
@@ -443,7 +443,7 @@ clc
 % and the single method for computing the distance (shortest distance - default)
 
 Zb = linkage(Q,'single','cityblock'); % original un-standardized data (can be seen in Section B.1)
-cb = cluster(Zb,'Maxclust',3); % create the clustering using 6 clusters 
+cb = cluster(Zb,'Maxclust',6); % create the clustering using 6 clusters 
 
 % Plot dendrogram using manhattan metric
 figure(20)
@@ -483,7 +483,7 @@ for i=[2:4]
 end
 
 % train the training data
-Mdl = TreeBagger(100,Dtrain,classTrain,'OOBPrediction','On','Method','classification','OOBPredictorImportance','off')
+Mdl = TreeBagger(100,Dtrain,classTrain,'OOBPrediction','On','Method','classification','OOBPredictorImportance','off');
 
 view(Mdl.Trees{1},'Mode','graph') % view the first tree generated
 view(Mdl.Trees{2},'Mode','graph') % view the second tree generated
@@ -495,7 +495,7 @@ plot(oobErrorBaggedEnsembleTrain)
 grid on
 xlabel ('Number of grown trees')
 ylabel ('Out-of-bag classification error')
-%saveas(figure(22),[pwd '\results\Section_D\out-of-bag-error.jpg']);
+% saveas(figure(22),[pwd '\results\Section_D\out-of-bag-error.jpg']);
 
 %% Section D.2.c - Confusion Matrix
 clc
@@ -521,5 +521,5 @@ g2 = predicted_class;	% Predicted groups
 % generate the confusion chart/matrix
 figure(23)
 confusionchart(g1,g2)
-saveas(figure(23),[pwd '\results\Section_D\confusion_matrix.jpg']);
+% saveas(figure(23),[pwd '\results\Section_D\confusion_matrix.jpg']);
 
